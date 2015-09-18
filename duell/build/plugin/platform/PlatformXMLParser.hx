@@ -49,7 +49,7 @@ import duell.helpers.LogHelper;
 			}
 		}
 	}
-	public static function parsePlatform(xml : Fast) : Void
+	public static function parsePlatform(xml: Fast) : Void
 	{
 	    for (element in xml.elements)
 		{
