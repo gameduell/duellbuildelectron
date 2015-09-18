@@ -163,7 +163,7 @@ class PlatformBuild
 
  	    ///copying template files
  	    /// index.html, index.js
- 	    TemplateHelper.recursiveCopyTemplatedFiles(Path.join([duellBuildElectronPath, "template", "html5"]), projectDirectory, Configuration.getData(), Configuration.getData().TEMPLATE_FUNCTIONS);
+ 	    TemplateHelper.recursiveCopyTemplatedFiles(Path.join([duellBuildElectronPath, "template", "electron"]), projectDirectory, Configuration.getData(), Configuration.getData().TEMPLATE_FUNCTIONS);
  	}
  	public function build(): Void
  	{
