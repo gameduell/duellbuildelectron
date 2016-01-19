@@ -26,164 +26,166 @@
 
 package duell.build.plugin.platform;
 
+import duell.build.objects.Configuration;
+import duell.build.objects.DuellProjectXML;
+import duell.objects.Arguments;
+import duell.objects.DuellLib;
+import duell.helpers.PathHelper;
+import duell.helpers.TemplateHelper;
+import duell.helpers.PlatformHelper;
+import duell.helpers.CommandHelper;
+import duell.helpers.DuellConfigHelper;
+
+using StringTools;
+
+import haxe.io.Path;
+
 class PlatformBuild
 {
-  // Need to run duell setup electron first
-  public var requiredSetups = ["electron"];
+    // Need to run duell setup electron first
+    public var requiredSetups = [{name: "electron", version: "master"}];
 
-  // Cross-platform baby
-  public var supportedHostPlatforms = [WINDOWS, MAC, LINUX];
+    // Cross-platform baby
+    public var supportedHostPlatforms = [WINDOWS, MAC, LINUX];
 
-  // constants
-  private static inline var TEST_RESULT_FILENAME = "test_result_electron.xml";
-  private static inline var DEFAULT_SERVER_URL = "http://localhost:3000/";
-  private static inline var DELAY_BETWEEN_PYTHON_LISTENER_AND_RUNNING_THE_APP = 2;
+    private var targetDirectory : String;
+    private var duellBuildElectronPath : String;
+    private var projectDirectory : String;
 
-  // cmd arguments
-  private var isDebug : Bool = false;
-  private var isTest : Bool = false;
-  private var applicationWillRunAfterBuild : Bool = false;
-
-  private var fullTestResultPath : String;
-  private var targetDirectory : String;
-  private var duellBuildElectronPath : String;
-  private var projectDirectory : String;
-
-  public function new()
-  {
-    checkArguments();
-  }
-  public function checkArguments():Void
-  {
-    if (Arguments.isSet("-debug"))
+    public function new()
     {
-      isDebug = true;
+        checkArguments();
+    }
+    public function checkArguments():Void
+    {
+
+        Configuration.addParsingDefine("release");
     }
 
-    if(!Arguments.isSet("-norun"))
+    public function parse() : Void
     {
-      applicationWillRunAfterBuild = true;
+        parseProject();
+    }
+    public function parseProject() : Void
+    {
+        var projectXML = DuellProjectXML.getConfig();
+        projectXML.parse();
     }
 
-    if (Arguments.isSet("-test"))
+    public function prepareBuild() : Void
     {
-      isTest = true;
-      applicationWillRunAfterBuild = true;
-      Configuration.addParsingDefine("test");
+        prepareVariables();
+
+        convertDuellAndHaxelibsIntoHaxeCompilationFlags();
+        convertParsingDefinesToCompilationDefines();
+        forceHaxeJson();
+        createDirectoryAndCopyTemplate();
+
     }
 
-    if (isDebug)
+    private function prepareVariables(): Void
     {
-      Configuration.addParsingDefine("debug");
-    }
-    else
-    {
-      Configuration.addParsingDefine("release");
-    }
-  }
-
-  public function parse() : Void
-  {
-    parseProject();
-  }
-  public function parseProject() : Void
-  {
-    var projectXML = DuellProjectXML.getConfig();
-    projectXML.parse();
-  }
-
-  public function prepareBuild() : Void
-  {
-    prepareVariables();
-
-    convertDuellAndHaxelibsIntoHaxeCompilationFlags();
-    convertParsingDefinesToCompilationDefines();
-    forceHaxeJson();
-    forceDeprecationWarnings();
-
-  }
-
-  private function prepareVariables(): Void
-  {
-    targetDirectory = Configuration.getData().OUTPUT;
-    projectDirectory = Path.join([targetDirectory, "electron"]);
-    fullTestResultPath = Path.join([Configuration.getData().OUTPUT, "test", TEST_RESULT_FILENAME]);
-    duellBuildElectronPath = DuellLib.getDuellLib("duellbuildelectron").getPath();
-  }
-
-  private function convertDuellAndHaxelibsIntoHaxeCompilationFlags()
-  {
-    for (haxelib in Configuration.getData().DEPENDENCIES.HAXELIBS)
-    {
-      var version = haxelib.version;
-      if (version.startsWith("ssh") || version.startsWith("http"))
-      version = "git";
-      Configuration.getData().HAXE_COMPILE_ARGS.push("-lib " + haxelib.name + (version != "" ? ":" + version : ""));
+        targetDirectory = Configuration.getData().OUTPUT;
+        projectDirectory = Path.join([targetDirectory, "electron"]);
+        duellBuildElectronPath = DuellLib.getDuellLib("duellbuildelectron").getPath();
     }
 
-    for (duelllib in Configuration.getData().DEPENDENCIES.DUELLLIBS)
+    private function convertDuellAndHaxelibsIntoHaxeCompilationFlags()
     {
-      Configuration.getData().HAXE_COMPILE_ARGS.push("-cp " + DuellLib.getDuellLib(duelllib.name, duelllib.version).getPath());
+        for (haxelib in Configuration.getData().DEPENDENCIES.HAXELIBS)
+        {
+            var version = haxelib.version;
+            if (version.startsWith("ssh") || version.startsWith("http"))
+            version = "git";
+            Configuration.getData().HAXE_COMPILE_ARGS.push("-lib " + haxelib.name + (version != "" ? ":" + version : ""));
+        }
+
+        for (duelllib in Configuration.getData().DEPENDENCIES.DUELLLIBS)
+        {
+            Configuration.getData().HAXE_COMPILE_ARGS.push("-cp " + DuellLib.getDuellLib(duelllib.name, duelllib.version).getPath());
+        }
+
+        for (path in Configuration.getData().SOURCES)
+        {
+            Configuration.getData().HAXE_COMPILE_ARGS.push("-cp " + path);
+        }
     }
 
-    for (path in Configuration.getData().SOURCES)
+    private function convertParsingDefinesToCompilationDefines()
     {
-      Configuration.getData().HAXE_COMPILE_ARGS.push("-cp " + path);
+
+        for (define in DuellProjectXML.getConfig().parsingConditions)
+        {
+            if (define == "debug" )
+            {
+                Configuration.getData().HAXE_COMPILE_ARGS.push("-debug");
+                continue;
+            }
+
+            Configuration.getData().HAXE_COMPILE_ARGS.push("-D " + define);
+        }
     }
-  }
 
-  private function convertParsingDefinesToCompilationDefines()
-  {
-
-    for (define in DuellProjectXML.getConfig().parsingConditions)
+    private function forceHaxeJson(): Void
     {
-      if (define == "debug" )
-      {
-        Configuration.getData().HAXE_COMPILE_ARGS.push("-debug");
-        continue;
-      }
-
-      Configuration.getData().HAXE_COMPILE_ARGS.push("-D " + define);
+        Configuration.getData().HAXE_COMPILE_ARGS.push("-D haxeJSON");
     }
-  }
 
-  private function forceHaxeJson(): Void
-  {
-    Configuration.getData().HAXE_COMPILE_ARGS.push("-D haxeJSON");
-  }
+    public function createDirectoryAndCopyTemplate() : Void
+    {
+        /// Create directories
+        PathHelper.mkdir(targetDirectory);
 
-  private function forceDeprecationWarnings(): Void
-  {
-    Configuration.getData().HAXE_COMPILE_ARGS.push("-D deprecation-warnings");
-  }
-  public function createDirectoryAndCopyTemplate() : Void
-  {
-    /// Create directories
-    PathHelper.mkdir(targetDirectory);
+        ///copying template files
+        /// anything inside the template/electron folder
+        TemplateHelper.recursiveCopyTemplatedFiles( Path.join([duellBuildElectronPath, "template", "electron"]),
+        projectDirectory, Configuration.getData(),
+        Configuration.getData().TEMPLATE_FUNCTIONS);
+    }
+    public function build(): Void
+    {
+        var buildPath : String  = Path.join([targetDirectory,"electron","hxml"]);
 
-    ///copying template files
-    /// anything inside the template/electron folder
-    TemplateHelper.recursiveCopyTemplatedFiles(Path.join([duellBuildElectronPath, "template", "electron"]), projectDirectory, Configuration.getData(), Configuration.getData().TEMPLATE_FUNCTIONS);
-  }
-  public function build(): Void
-  {
-  }
+        CommandHelper.runHaxe( buildPath,
+                                ["Build.hxml"],
+                                {
+                                    logOnlyIfVerbose : false,
+                                    systemCommand : true,
+                                    errorMessage: "compiling the haxe code",
+                                    exitOnError: true
+                                });
+    }
 
-  public function run(): Void
-  {
-  }
+    public function run(): Void
+    {
+        var electronFolder = Path.join([DuellConfigHelper.getDuellConfigFolderLocation(),
+                                        "electron", "bin"]);
+        CommandHelper.runCommand(electronFolder, "electron",
+                                [Path.join([projectDirectory, "bootstrap.js"])],
+                                {
+                                    systemCommand: false
+                                });
+    }
 
-  public function test(): Void
-  {
-  }
+    public function test(): Void
+    {
+    }
 
-  public function publish(): Void
-  {
-    throw "Publishing is not yet implemented for this platform";
-  }
+    public function clean(): Void
+    {
+    }
 
-  public function fast(): Void
-  {
-  }
+    public function handleError(): Void
+    {
+    }
+
+    public function publish(): Void
+    {
+        throw "Publishing is not yet implemented for this platform";
+    }
+
+    public function fast(): Void
+    {
+    }
 
 }
