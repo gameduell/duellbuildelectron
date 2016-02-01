@@ -37,7 +37,7 @@ BGCOLOR : String,
 class PlatformConfiguration
 {
 	public static var _configuration : PlatformConfigurationData = null;
-	public static var _parsingDefines : Array<String> = ["html5"];
+	public static var _parsingDefines : Array<String> = ["electron"];
 	public function new()
 	{}
 
