@@ -64,6 +64,8 @@ import haxe.io.Path;
 					parseWinSizeElement(element);
 				case "js-source":
 					parseJSSourceElement(element);
+				case "jquery":
+					parseJQueryElement(element);
 			}
 		}
 	}
@@ -92,6 +94,24 @@ import haxe.io.Path;
 				source : pathResolved, 
 				target : "libs/" + path.file + "." + path.ext
 			});
+		}
+		else
+		{
+			LogHelper.info("Element 'js-source' doesn't has a 'path' attribute!");
+		}
+	}
+
+	private static function parseJQueryElement(element : Fast): Void
+	{
+		if(element.has.path)
+		{
+			var pathResolved = resolvePath(element.att.path);
+			var path = new Path( pathResolved );
+
+			PlatformConfiguration.getData().JQUERY = {
+				source : pathResolved, 
+				target : "libs/" + path.file + "." + path.ext
+			};
 		}
 		else
 		{

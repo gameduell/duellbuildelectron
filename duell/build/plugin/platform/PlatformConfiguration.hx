@@ -36,7 +36,8 @@ typedef PlatformConfigurationData = {
 	WIDTH : String,
 	HEIGHT : String,
 	BGCOLOR : String,
-	JS_SOURCES : Array<JSSource>
+	JS_SOURCES : Array<JSSource>,
+	JQUERY : JSSource
 }
 
 class PlatformConfiguration
@@ -68,7 +69,8 @@ class PlatformConfiguration
 			WIDTH : "1024",
 			HEIGHT : "768",
 			BGCOLOR : "#FFF",//same as #FFFFFF
-			JS_SOURCES : []
+			JS_SOURCES : [],
+			JQUERY : null
 		};
 	}
 }

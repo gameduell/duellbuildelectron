@@ -150,7 +150,12 @@ class PlatformBuild
 
     private function copyJSIncludes()
     {
-        if( PlatformConfiguration.getData().JS_SOURCES.length == 0 ) return;
+        if( PlatformConfiguration.getData().JS_SOURCES.length == 0 && PlatformConfiguration.getData().JQUERY == null ) return;
+
+        if( PlatformConfiguration.getData().JQUERY != null )
+        {
+            PlatformConfiguration.getData().JS_SOURCES.push( PlatformConfiguration.getData().JQUERY );
+        }
 
         var targetFolder = Path.join([projectDirectory,"libs"]);
 

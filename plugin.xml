@@ -10,5 +10,8 @@
         <elem name="js-source">
             Use this to include external javascript code.E.g.: &lt;js-source path="libs/mylib.js".
         </elem>
+        <elem name="jquery">
+            Use this to include external jquery code.E.g.: &lt;jquery path="libs/jquery.js".
+        </elem>
     </configuration>
 </plugin>

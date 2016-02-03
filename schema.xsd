@@ -10,6 +10,7 @@
         <xs:choice maxOccurs="unbounded">
             <xs:element name="win-size" type="d:WidthHeight"/>
             <xs:element name="js-source" type="d:Path"/>
+            <xs:element name="jquery" type="d:Path"/>
         </xs:choice>
     </xs:complexType>
 </xs:schema>

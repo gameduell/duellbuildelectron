@@ -5,6 +5,11 @@
     </head>
 
     <body style="padding: 0; margin: 0;">
+    ::if (PLATFORM.JQUERY != null)::
+        <script type="text/javascript">
+            window.$ = window.jQuery = require("./::PLATFORM.JQUERY.target::");
+        </script>
+    ::end::
     ::foreach PLATFORM.JS_SOURCES::
         <script type="text/javascript" src="./::__current__.target::"></script>
     ::end::
