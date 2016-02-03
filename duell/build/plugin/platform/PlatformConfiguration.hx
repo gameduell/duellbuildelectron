@@ -26,41 +26,49 @@
 
 package duell.build.plugin.platform;
 
+typedef JSSource = {
+	source : String,
+	target : String
+}
 
 typedef PlatformConfigurationData = {
-PLATFORM_NAME : String,
-WIDTH : String,
-HEIGHT : String,
-BGCOLOR : String,
+	PLATFORM_NAME : String,
+	WIDTH : String,
+	HEIGHT : String,
+	BGCOLOR : String,
+	JS_SOURCES : Array<JSSource>
 }
 
 class PlatformConfiguration
 {
 	public static var _configuration : PlatformConfigurationData = null;
-	public static var _parsingDefines : Array<String> = ["electron"];
+	public static var _parsingDefines : Array<String> = ["electron", "html5"];
+
 	public function new()
 	{}
 
 	public static function getData() : PlatformConfigurationData
 	{
-	    if(_configuration == null)
-	    	initConfig();
+		if(_configuration == null)
+			initConfig();
 
-	    return _configuration;
+		return _configuration;
 	}
+
 	public static function getConfigParsingDefines() : Array<String>
 	{
-	    return _parsingDefines;
+		return _parsingDefines;
 	}
+
 	public static function initConfig() : Void
 	{
-	    _configuration =
-	    {
+		_configuration =
+		{
 			PLATFORM_NAME : "electron",
 			WIDTH : "1024",
 			HEIGHT : "768",
 			BGCOLOR : "#FFF",//same as #FFFFFF
-	    };
+			JS_SOURCES : []
+		};
 	}
-
 }

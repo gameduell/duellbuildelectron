@@ -5,6 +5,9 @@
     </head>
 
     <body style="padding: 0; margin: 0;">
+    ::foreach PLATFORM.JS_SOURCES::
+        <script type="text/javascript" src="./::__current__.target::"></script>
+    ::end::
         <script type="text/javascript" src="./::APP.FILE::.js"></script>
     </body>
 

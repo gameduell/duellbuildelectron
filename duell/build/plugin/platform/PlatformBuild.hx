@@ -35,9 +35,13 @@ import duell.helpers.TemplateHelper;
 import duell.helpers.PlatformHelper;
 import duell.helpers.CommandHelper;
 import duell.helpers.DuellConfigHelper;
+import duell.helpers.FileHelper;
+import duell.helpers.LogHelper;
 
 using StringTools;
 
+import sys.FileSystem;
+import sys.io.File;
 import haxe.io.Path;
 
 class PlatformBuild
@@ -56,9 +60,9 @@ class PlatformBuild
     {
         checkArguments();
     }
+
     public function checkArguments():Void
     {
-
         Configuration.addParsingDefine("release");
     }
 
@@ -66,6 +70,7 @@ class PlatformBuild
     {
         parseProject();
     }
+
     public function parseProject() : Void
     {
         var projectXML = DuellProjectXML.getConfig();
@@ -80,7 +85,7 @@ class PlatformBuild
         convertParsingDefinesToCompilationDefines();
         forceHaxeJson();
         createDirectoryAndCopyTemplate();
-
+        copyJSIncludes();
     }
 
     private function prepareVariables(): Void
@@ -142,6 +147,31 @@ class PlatformBuild
         projectDirectory, Configuration.getData(),
         Configuration.getData().TEMPLATE_FUNCTIONS);
     }
+
+    private function copyJSIncludes()
+    {
+        if( PlatformConfiguration.getData().JS_SOURCES.length == 0 ) return;
+
+        var targetFolder = Path.join([projectDirectory,"libs"]);
+
+        if (!FileSystem.exists( targetFolder ))
+        {
+            FileSystem.createDirectory( targetFolder );
+        }
+
+        for ( jsSource in PlatformConfiguration.getData().JS_SOURCES )
+        {
+            var target = Path.join([projectDirectory, jsSource.target]);
+
+            if(FileSystem.exists( target ))
+            {
+                FileSystem.deleteFile( target );
+            }
+
+            File.copy( jsSource.source, target);
+        }
+    }
+
     public function build(): Void
     {
         var buildPath : String  = Path.join([targetDirectory,"electron","hxml"]);

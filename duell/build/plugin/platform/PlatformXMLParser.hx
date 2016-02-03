@@ -33,6 +33,8 @@ import duell.build.objects.Configuration;
 import duell.helpers.XMLHelper;
 import duell.helpers.LogHelper;
 
+import haxe.io.Path;
+
  class PlatformXMLParser
  {
  	public function new()
@@ -44,39 +46,61 @@ import duell.helpers.LogHelper;
 		{
 			switch(element.name)
 			{
-            case 'electron':
+			case 'electron':
 					parsePlatform(element);
 			}
 		}
 	}
 	public static function parsePlatform(xml: Fast) : Void
 	{
-	    for (element in xml.elements)
+		for (element in xml.elements)
 		{
 			if (!XMLHelper.isValidElement(element, DuellProjectXML.getConfig().parsingConditions))
 				continue;
+
 			switch (element.name)
 			{
 				case "win-size":
 					parseWinSizeElement(element);
+				case "js-source":
+					parseJSSourceElement(element);
 			}
 		}
 	}
 
 	public static function parseWinSizeElement(element : Fast) : Void
 	{
-	    if(element.has.width)
-	    {
-	    	PlatformConfiguration.getData().WIDTH = element.att.width;
-	    }
-	    if(element.has.height)
-	    {
-	    	PlatformConfiguration.getData().HEIGHT = element.att.height;
-	    }
+		if(element.has.width)
+		{
+			PlatformConfiguration.getData().WIDTH = element.att.width;
+		}
+
+		if(element.has.height)
+		{
+			PlatformConfiguration.getData().HEIGHT = element.att.height;
+		}
+	}
+
+	private static function parseJSSourceElement(element : Fast): Void
+	{
+		if(element.has.path)
+		{
+			var pathResolved = resolvePath(element.att.path);
+			var path = new Path( pathResolved );
+
+			PlatformConfiguration.getData().JS_SOURCES.push({
+				source : pathResolved, 
+				target : "libs/" + path.file + "." + path.ext
+			});
+		}
+		else
+		{
+			LogHelper.info("Element 'js-source' doesn't has a 'path' attribute!");
+		}
 	}
 
 	private static function resolvePath(string : String) : String /// convenience method
 	{
-		return DuellProjectXML.getConfig().resolvePath(string);
+		return DuellProjectXML.getConfig().resolvePath( string );
 	}
  }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin>
+    <documentation>
+    Use this plugin to build for the Electron platform. 
+    </documentation>
+    <configuration>
+        <elem name="win-size">
+            Use this to specifie the canvas dimension(width x height) in the application html page. E.g.: &lt;win-size width="1024" height="768" /&gt;.
+        </elem>
+        <elem name="js-source">
+            Use this to include external javascript code.E.g.: &lt;js-source path="libs/mylib.js".
+        </elem>
+    </configuration>
+</plugin>

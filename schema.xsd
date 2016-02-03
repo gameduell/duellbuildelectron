@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:d="duell"
+           targetNamespace="duell"
+           elementFormDefault="qualified">
+
+    <xs:include schemaLocation="https://raw.githubusercontent.com/gameduell/duell/master/schema/common_schema.xsd" />
+
+    <xs:complexType name="electron">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="win-size" type="d:WidthHeight"/>
+            <xs:element name="js-source" type="d:Path"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>
