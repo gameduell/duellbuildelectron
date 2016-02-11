@@ -61,4 +61,18 @@ app.on('ready', function() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  // Create an interface to be able to send certain commands to node process
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', (chunk) => {
+    if (chunk !== null)
+    {
+      var command = chunk.trim();
+      console.log('Nodejs :: command : "' + command + '"');
+      switch(command){
+        case "exit":
+             app.quit();
+      }
+    }
+  });
 });
