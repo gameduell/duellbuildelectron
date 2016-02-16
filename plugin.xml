@@ -8,10 +8,13 @@
             Use this to specifie the canvas dimension(width x height) in the application html page. E.g.: &lt;win-size width="1024" height="768" /&gt;.
         </elem>
         <elem name="js-source">
-            Use this to include external javascript code.E.g.: &lt;js-source path="libs/mylib.js".
+            Use this to include external javascript code.E.g.: &lt;js-source path="libs/mylib.js" /&gt;.
         </elem>
         <elem name="jquery">
-            Use this to include external jquery code.E.g.: &lt;jquery path="libs/jquery.js".
+            Use this to include external jquery code.E.g.: &lt;jquery path="libs/jquery.js" /&gt;.
+        </elem>
+        <elem name="main">
+            Use this to exchange the default bootstrapping file of your main process. Target a haxe file by using 'source' attribute and 'targetName' to specify the output filename, e.g. &lt;main source="MyMainFile" targetName="main" /&gt;. Besides the filename, the targetName will be injected into package.json's 'main' property.
         </elem>
     </configuration>
 </plugin>

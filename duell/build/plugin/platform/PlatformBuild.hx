@@ -55,6 +55,7 @@ class PlatformBuild
     private var targetDirectory : String;
     private var duellBuildElectronPath : String;
     private var projectDirectory : String;
+    private var templateConfig : String;
 
     public function new()
     {
@@ -93,6 +94,7 @@ class PlatformBuild
         targetDirectory = Configuration.getData().OUTPUT;
         projectDirectory = Path.join([targetDirectory, "electron"]);
         duellBuildElectronPath = DuellLib.getDuellLib("duellbuildelectron").getPath();
+        templateConfig = PlatformConfiguration.getData().MAIN_CLASS_SOURCE == null ? "default.config" : "hxMain.config"; //use default config
     }
 
     private function convertDuellAndHaxelibsIntoHaxeCompilationFlags()
@@ -136,16 +138,34 @@ class PlatformBuild
         Configuration.getData().HAXE_COMPILE_ARGS.push("-D haxeJSON");
     }
 
+    /**
+        function createDirectoryAndCopyTemplate
+        @return Void
+
+        Copies certain template files, which are defined in '..template/*.config'
+        into the target folder.
+    **/
     public function createDirectoryAndCopyTemplate() : Void
     {
         /// Create directories
         PathHelper.mkdir(targetDirectory);
 
-        ///copying template files
-        /// anything inside the template/electron folder
-        TemplateHelper.recursiveCopyTemplatedFiles( Path.join([duellBuildElectronPath, "template", "electron"]),
-        projectDirectory, Configuration.getData(),
-        Configuration.getData().TEMPLATE_FUNCTIONS);
+        var sourcePath = Path.join([duellBuildElectronPath, "template"]);
+        var fileContent = File.getContent(Path.join([sourcePath, templateConfig]));
+        var fileList = fileContent.split("\n");
+        for ( file in fileList )
+        {
+            var fullFilePath = Path.join([targetDirectory, file]);
+            var targetDir = Path.directory(fullFilePath);
+            PathHelper.mkdir(targetDir);
+
+            TemplateHelper.copyTemplateFile(
+                Path.join([sourcePath, file]),
+                fullFilePath,
+                Configuration.getData(),
+                Configuration.getData().TEMPLATE_FUNCTIONS
+            );
+        }
     }
 
     private function copyJSIncludes()
@@ -179,7 +199,19 @@ class PlatformBuild
 
     public function build(): Void
     {
-        var buildPath : String  = Path.join([targetDirectory,"electron","hxml"]);
+        var buildPath : String = Path.join([targetDirectory,"electron","hxml"]);
+
+        if(PlatformConfiguration.getData().MAIN_CLASS_SOURCE != null)
+        {
+            CommandHelper.runHaxe( buildPath,
+                                ["BuildMain.hxml"],
+                                {
+                                    logOnlyIfVerbose : false,
+                                    systemCommand : true,
+                                    errorMessage: "compiling the haxe code for main process",
+                                    exitOnError: true
+                                });
+        }
 
         CommandHelper.runHaxe( buildPath,
                                 ["Build.hxml"],
@@ -196,7 +228,7 @@ class PlatformBuild
         var electronFolder = Path.join([DuellConfigHelper.getDuellConfigFolderLocation(),
                                         "electron", "bin"]);
         CommandHelper.runCommand(electronFolder, "electron",
-                                [Path.join([projectDirectory, "bootstrap.js"])],
+                                [Path.join([projectDirectory, PlatformConfiguration.getData().MAIN_CLASS_EXPORT])],
                                 {
                                     systemCommand: false
                                 });

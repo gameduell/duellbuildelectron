@@ -5,12 +5,22 @@
            elementFormDefault="qualified">
 
     <xs:include schemaLocation="https://raw.githubusercontent.com/gameduell/duell/master/schema/common_schema.xsd" />
+    
+    <xs:complexType name="ElectronMain">
+        <xs:complexContent>
+            <xs:extension base="d:Conditional">
+                <xs:attribute name="source" type="d:Path" use="required"/>
+                <xs:attribute name="targetName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
     <xs:complexType name="electron">
         <xs:choice maxOccurs="unbounded">
-            <xs:element name="win-size" type="d:WidthHeight"/>
-            <xs:element name="js-source" type="d:Path"/>
-            <xs:element name="jquery" type="d:Path"/>
+            <xs:element name="win-size" type="d:WidthHeight" />
+            <xs:element name="js-source" type="d:Path" />
+            <xs:element name="jquery" type="d:Path" />
+            <xs:element name="main" type="d:ElectronMain" />
         </xs:choice>
     </xs:complexType>
 </xs:schema>

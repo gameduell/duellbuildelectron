@@ -66,6 +66,8 @@ import haxe.io.Path;
 					parseJSSourceElement(element);
 				case "jquery":
 					parseJQueryElement(element);
+				case "main":
+					parseMainElement(element);
 			}
 		}
 	}
@@ -116,6 +118,15 @@ import haxe.io.Path;
 		else
 		{
 			LogHelper.info("Element 'js-source' doesn't has a 'path' attribute!");
+		}
+	}
+
+	private static function parseMainElement(element : Fast): Void
+	{
+		if(element.has.source && element.has.targetName)
+		{
+			PlatformConfiguration.getData().MAIN_CLASS_SOURCE = element.att.source;
+			PlatformConfiguration.getData().MAIN_CLASS_EXPORT = element.att.targetName;
 		}
 	}
 

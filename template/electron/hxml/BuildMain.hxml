@@ -1,0 +1,4 @@
+-main ::PLATFORM.MAIN_CLASS_SOURCE:: ::foreach (HAXE_COMPILE_ARGS)::
+::__current__::::end::
+-js ::OUTPUT::/electron/::PLATFORM.MAIN_CLASS_EXPORT::.js
+-debug

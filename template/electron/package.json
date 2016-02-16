@@ -1,5 +1,5 @@
 {
-    name:"::APP.TITLE::",
-    version:"::APP.version::",
-    main:"bootstrap.js"
+    "name":"::APP.TITLE::",
+    "version":"::APP.version::",
+    "main":"::PLATFORM.MAIN_CLASS_EXPORT::.js"
 }
