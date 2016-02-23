@@ -225,10 +225,16 @@ class PlatformBuild
 
     public function run(): Void
     {
+        var args = [Path.join([projectDirectory, PlatformConfiguration.getData().MAIN_CLASS_EXPORT])];
+        if(Arguments.isSet("-verbose"))
+        {
+            args.push("--enable-logging");
+        }
+
         var electronFolder = Path.join([DuellConfigHelper.getDuellConfigFolderLocation(),
                                         "electron", "bin"]);
         CommandHelper.runCommand(electronFolder, "electron",
-                                [Path.join([projectDirectory, PlatformConfiguration.getData().MAIN_CLASS_EXPORT])],
+                                args,
                                 {
                                     systemCommand: false
                                 });
