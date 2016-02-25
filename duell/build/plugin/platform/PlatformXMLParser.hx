@@ -94,7 +94,8 @@ import haxe.io.Path;
 
 			PlatformConfiguration.getData().JS_SOURCES.push({
 				source : pathResolved, 
-				target : "libs/" + path.file + "." + path.ext
+				target : "libs/" + path.file + "." + path.ext,
+				applyTemplate : element.has.applyTemplate ? element.att.applyTemplate == "true" : false
 			});
 		}
 		else
@@ -112,7 +113,8 @@ import haxe.io.Path;
 
 			PlatformConfiguration.getData().JQUERY = {
 				source : pathResolved, 
-				target : "libs/" + path.file + "." + path.ext
+				target : "libs/" + path.file + "." + path.ext,
+				applyTemplate : false
 			};
 		}
 		else

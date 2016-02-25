@@ -193,7 +193,22 @@ class PlatformBuild
                 FileSystem.deleteFile( target );
             }
 
-            File.copy( jsSource.source, target);
+            var fileOutput = File.write( target );
+
+            if(jsSource.applyTemplate == true)
+            {
+                var fileContents:String = File.getContent( jsSource.source );
+                var template:Template = new Template( fileContents );
+                var result:String = template.execute(Configuration.getData(), Configuration.getData().TEMPLATE_FUNCTIONS);
+                fileOutput.writeString( result );
+            }
+            else
+            {
+                var fileContents:String = File.getContent( jsSource.source );
+                fileOutput.writeString( fileContents );
+            }
+
+            fileOutput.close();
         }
     }
 

@@ -28,7 +28,8 @@ package duell.build.plugin.platform;
 
 typedef JSSource = {
 	source : String,
-	target : String
+	target : String,
+	applyTemplate : Bool
 }
 
 typedef PlatformConfigurationData = {
