@@ -17,4 +17,9 @@
             Use this to exchange the default bootstrapping file of your main process. Target a haxe file by using 'source' attribute and 'targetName' to specify the output filename, e.g. &lt;main source="MyMainFile" targetName="main" /&gt;. Besides the filename, the targetName will be injected into package.json's 'main' property.
         </elem>
     </configuration>
+    <arg name="-debug" type="void">
+        <documentation>
+            Use this argument if you want to build in debug.
+        </documentation>
+    </arg>
 </plugin>

@@ -64,7 +64,14 @@ class PlatformBuild
 
     public function checkArguments():Void
     {
-        Configuration.addParsingDefine("release");
+        if (Arguments.isSet("-debug"))
+        {
+            Configuration.addParsingDefine("debug");
+        }
+        else
+        {
+            Configuration.addParsingDefine("release");
+        }
     }
 
     public function parse() : Void
@@ -80,6 +87,11 @@ class PlatformBuild
 
     public function prepareBuild() : Void
     {
+        if (Arguments.isSet("-debug"))
+        {
+            Configuration.getData().PLATFORM.DEBUG = true;
+        }
+        
         prepareVariables();
 
         convertDuellAndHaxelibsIntoHaxeCompilationFlags();

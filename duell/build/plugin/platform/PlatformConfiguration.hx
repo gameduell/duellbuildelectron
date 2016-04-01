@@ -39,6 +39,7 @@ typedef PlatformConfigurationData = {
 	BGCOLOR : String,
 	JS_SOURCES : Array<JSSource>,
 	JQUERY : JSSource,
+	DEBUG : Bool,
 	MAIN_CLASS_SOURCE : String,
 	MAIN_CLASS_EXPORT : String
 }
@@ -74,6 +75,7 @@ class PlatformConfiguration
 			BGCOLOR : "#FFF",//same as #FFFFFF
 			JS_SOURCES : [],
 			JQUERY : null,
+			DEBUG : false,
 			MAIN_CLASS_SOURCE : null,
 			MAIN_CLASS_EXPORT : "bootstrap"
 		};
